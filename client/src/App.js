@@ -12,11 +12,17 @@ function App() {
   const onChange = (e) => {
     console.log(e.target.files)
   }
+  const inputEl = React.useRef()
+  const focusInput =()=>{
+    inputEl.current.focus()
+  }
   return <div className='container'>
     <form className='form' onSubmit={onSubmit}>
     <div>
           <Input onChange={onChange} />
           <button type="submit">Submit</button>
+          <input ref={inputEl} type="text" />
+         <button onClick={focusInput}>Focus input</button>
         </div>
     </form>
   </div>

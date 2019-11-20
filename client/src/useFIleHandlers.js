@@ -1,4 +1,4 @@
-import React, {useReducer} from 'react'
+import React, {useReducer, useCallback, useEffect, useRef} from 'react'
 export default function useFileHandlers(){
   const LOADED = 'LOADED'
   const INIT = 'INIT'
@@ -13,16 +13,54 @@ export default function useFileHandlers(){
     uploaded: {},
     status:'idle'
   }
+  const api = {
+    uploadFile({timeout =1000}){
+      return new Promise((resolve)=>{
+        setTimeout(()=>resolve())
+      },timeout)
+    }
+  }
   const reducer = (state, action)=> {
     switch (action.type){
       case 'load':
         return {...state, files:action.files, status:LOADED}
       case 'submit':
         return {...state, uploading:true, pending:state.files, status: INIT}
+      case 'next':
+          return {
+            ...state,
+            next: action.next,
+            status: PENDING,
+          }
       default:
         return state;
     }  
   }
+  const logUploadedFile = (num, color = 'green') => {
+    const msg = `%cUploaded ${num} files.`
+    const style = `color:${color};font-weight:bold;`
+    console.log(msg, style)
+  }
+  const countRef =useRef(0)
+
+// Processes the next pending thumbnail when ready
+useEffect(()=>{
+  if (state.pending.length && state.next){
+    const {next}=state
+    api
+      .uploadFile(next)
+      .then(()=>{
+        const prev = next
+        logUploadedFile(++countRef.current)
+        const pending = state.pending.slice(1)
+        dispatch({type:"file-uploaded", prev, pending})
+      })
+      .catch((error) => {
+        console.error(error)
+        dispatch({ type: 'set-upload-error', error })
+      })
+  }
+},[state])
   const [state,dispach] = useReducer(reducer, initialState)
   const onChange = (e)=>{
     if (e.target.files.length) {
@@ -42,5 +80,11 @@ export default function useFileHandlers(){
       window.alert("You don't have any files loaded")
     }
   }
+  useEffect(() => {
+    if (state.pending.length && state.next == null) {
+      const next = state.pending[0]
+      dispatch({ type: 'next', next })
+    }
+  }, [state.next, state.pending])
   return {...state, onSubmit,onChange}
 }
