@@ -1,29 +1,48 @@
 import React from 'react';
 import './App.css';
-
-const Input =(props)=>(
+import useFileHandlers from './useFileHandlers'
+const Input = (props) => (
   <input type="file" name="file-input" multiple {...props} />
 )
 function App() {
-  const onSubmit = (e) => {
-    e.preventDefault()
-  }
-
-  const onChange = (e) => {
-    console.log(e.target.files)
-  }
   const inputEl = React.useRef()
-  const focusInput =()=>{
+  const focusInput = () => {
     inputEl.current.focus()
   }
+  const {
+    files,
+    pending,
+    next,
+    uploading,
+    uploaded,
+    status,
+    onSubmit,
+    onChange,
+  } = useFileHandlers()
   return <div className='container'>
     <form className='form' onSubmit={onSubmit}>
-    <div>
-          <Input onChange={onChange} />
-          <button type="submit">Submit</button>
-          <input ref={inputEl} type="text" />
-         <button onClick={focusInput}>Focus input</button>
-        </div>
+    {status === 'FILES_UPLOADED' && (
+          <div className="success-container">
+            <div>
+              <h2>Congratulations!</h2>
+              <small>You uploaded your files. Get some rest.</small>
+            </div>
+          </div>
+        )}
+      <div>
+        <Input onChange={onChange} />
+        <button type="submit">Submit</button>
+        <input ref={inputEl} type="text" />
+        <button onClick={focusInput}>Focus input</button>
+      </div>
+      <div>
+        {files.map(({ file, src, id }, index) => (
+          <div style={{opacity: uploaded[id]?0.2:1}}key={`thumb${index}`} className="thumbnail-wrapper">
+            <img className="thumbnail" src={src} alt="" />
+            <div className="thumbnail-caption">{file.name}</div>
+          </div>
+        ))}
+      </div>
     </form>
   </div>
 }
