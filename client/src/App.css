@@ -62,3 +62,9 @@ small {
   color: green;
   text-align: center;
 }
+.heading {
+  font-size: 30px;
+  padding: 16px 0;
+  color: #4444;
+  text-align:center;
+}
