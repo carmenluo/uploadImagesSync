@@ -3,9 +3,12 @@ import { reducer, SET_SEARCH_VALUE, SUBMIT_SEARCH, SET_REPOS, SET_ERROR_MESSAGE 
 import axios from 'axios'
 const initState = {
   searchValue: '',
-  loading: true,
+  loading: false,
   repos: [],
-  errorMessage: null
+  errorMessage: null,
+  reposPerPage: 10,
+  totalPages: 0,
+  currentPageNo: 0
 }
 
 // const onChange = (e) => {

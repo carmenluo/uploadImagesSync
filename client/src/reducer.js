@@ -9,19 +9,10 @@ const reducer = (state, action) => {
       return { ...state, searchValue: action.searchValue }
     case SUBMIT_SEARCH:
       return {...state, loading: action.loading}
-      // axios.get(`https://api.github.com/search/users?q=${state.searchValue}`)
-      //   .then(res => {
-      //     console.log(res)
-      //     return {...state, loading: false, repos: res.data.items}
-      //   })
-      //   .catch((err) => {
-      //     console.log(err)
-      //   })
-      // console.log(state)
     case SET_REPOS:
-      return {...state, loading: action.loading, repos: action.res}
+      return {...state, loading: action.loading, repos: action.res, searchValue: ''}
     case SET_ERROR_MESSAGE:
-      return {...state, loading: action.loading, errorMessage: action.errorMessage}
+      return {...state, loading: action.loading, errorMessage: action.errorMessage,searchValue: ''}
   }
 }
 export { reducer, SET_SEARCH_VALUE, SUBMIT_SEARCH, SET_REPOS, SET_ERROR_MESSAGE }
