@@ -1,8 +1,10 @@
 import React from 'react';
 import './App.css';
 import Search from './Search';
+import Repo from './Repo';
 import useFileHandlers from './useFileHandlers'
 import useSearchHandlers from './useSearchHandlers'
+import Status from './Status';
 const Input = (props) => (
   <input type="file" name="file-input" multiple {...props} />
 )
@@ -24,7 +26,7 @@ function App() {
   const {
     state,
     setSearchValue,
-    onSubmit
+    onSubmit,
   } = useSearchHandlers()
   // return <div className='container'>
   //   <form className='form' onSubmit={onSubmit}>
@@ -51,9 +53,20 @@ function App() {
   //       ))}
   //     </div>
   //   </form>
-
+  let repos = state.repos.map((repo, index) => {
+    return <Repo key={index} repo={repo}></Repo>
+  })
   return <div className='container'>
-    <Search onChange={setSearchValue} onClick={onSubmit} value={state.searchValue}></Search>
+    <Search onChange={setSearchValue} onSubmit={onSubmit} value={state.searchValue}></Search>
+    <div className="repos">
+      {state.loading && !state.errorMessage ? (
+        <Status message="Loading"></Status>
+      ) : state.errorMessage ? (
+        <div className="errorMessage">{state.errorMessage}</div>
+      ) : (
+            repos
+          )}
+    </div>
   </div>
 }
 

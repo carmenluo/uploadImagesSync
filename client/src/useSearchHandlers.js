@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useCallback,useReducer } from 'react'
-import {reducer, SET_SEARCH_VALUE, SUBMIT_SEARCH} from './reducer'
+import React, { useState, useEffect, useCallback, useReducer } from 'react'
+import { reducer, SET_SEARCH_VALUE, SUBMIT_SEARCH, SET_REPOS, SET_ERROR_MESSAGE } from './reducer'
 import axios from 'axios'
 const initState = {
-  searchValue: ''
+  searchValue: '',
+  loading: true,
+  repos: [],
+  errorMessage: null
 }
 
 // const onChange = (e) => {
@@ -14,23 +17,27 @@ const useSearchHandlers = () => {
 
   const setSearchValue = (e) => {
     const searchValue = e.target.value;
-    dispatch({type: SET_SEARCH_VALUE, searchValue:searchValue})
+    dispatch({ type: SET_SEARCH_VALUE, searchValue: searchValue })
   }
-  const onSubmit = (
-    (e) => {
-      e.preventDefault()
-        dispatch({ type: SUBMIT_SEARCH })
-    }
-  )
-  useEffect(()=>{
-    // axios.get(`https://api.github.com/search/users?q=${state.searchValue}`)
-    //   .then((res)=>{
-    //     console.log(res)
-    //   })
-    //   .catch((err)=>{
-    //     console.log(err)
-    //   })
-  })
+  const onSubmit = (evt) => {
+    evt.preventDefault();
+    // alert(`Submitting search`)
+    dispatch({ type: SUBMIT_SEARCH, loading: true })
+    axios.get(`https://api.github.com/users/${state.searchValue}/repos?per_page=100`)
+      .then((res) => {
+        console.log(res)
+        if (res.status >= 200 && res.status < 300) {
+          dispatch({ type: SET_REPOS, res: res.data, loading: false })
+        } else {
+          console.log(`${res.status}`)
+          dispatch({ type: SET_ERROR_MESSAGE, errorMessage: res.status, loading: false })
+        }
+      })
+      .catch((err) => {
+        dispatch({ type: SET_ERROR_MESSAGE, errorMessage: "no result", loading: false })
+      })
+
+  }
   return (
     // {  <form>
     //     <input placeholder="Search for..." onChange={this.handleInputChange}/>
